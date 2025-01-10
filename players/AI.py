@@ -18,9 +18,15 @@ class Dealer(Human):
 
     def next_move(self):
         sleep(3)
-        if self.memory["blank_cartridges"] >= 1 and self.memory["live_cartridges"] == 0:
 
-            solution = "a"
+        if self.pockets:
+            print("Дилер выбирает предмет.")
+            num, _ = choice(self.pockets)
+            return num
+
+        if self.memory["blank_cartridges"] >= 1 and self.memory["live_cartridges"] == 0:
+            return "a"
+
         elif (
             self.memory["blank_cartridges"] == 0 and self.memory["live_cartridges"] >= 1
         ):
