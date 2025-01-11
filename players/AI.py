@@ -49,12 +49,13 @@ class Dealer(Human):
             ]:
                 solution = "4"
                 self.memory["used_items"].add(("4", "🔪"))
-            if ("5", "⛓") in self.pockets and ("5", "⛓") not in self.memory[
+            elif ("5", "⛓") in self.pockets and ("5", "⛓") not in self.memory[
                 "used_items"
             ]:
                 solution = "5"
                 self.memory["used_items"].add(("5", "⛓"))
-
+            else:
+                solution = "b"
         if (
             not solution
             and self.memory["blank_cartridges"] > 0
@@ -64,7 +65,7 @@ class Dealer(Human):
                 "used_items"
             ]:
                 solution = "2"
-            if ("1", "🍺") in self.pockets and self.memory["current_cartridge"] != 0:
+            elif ("1", "🍺") in self.pockets and self.memory["current_cartridge"] != 0:
                 solution = "1"
 
         if not solution and self.pockets:

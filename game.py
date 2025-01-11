@@ -160,7 +160,7 @@ class BuckshotRoulette:
                         print("Так как игрок стрелял в себя, ход остается за ним.")
                         continue
 
-                elif result == 1 or (result == 0 and target == "b"):
+                elif result != 0 or (result == 0 and target == "b"):
                     if handcuff_marker is False:
                         player = next(queue)
 
