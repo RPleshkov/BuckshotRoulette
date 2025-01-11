@@ -3,7 +3,6 @@ from random import randint
 from time import sleep
 from players import *
 from shotgun import ShotGun
-import shotgun
 
 
 class BuckshotRoulette:
@@ -55,23 +54,37 @@ class BuckshotRoulette:
         print(f"Следующий ходит {player.name}")
         sleep(1)
 
+        if type(player) is Player:
+            self.dealer.memory["used_items"] = set()
+            enemy = self.dealer
+
+        if type(player) is Dealer:
+            enemy = self.player
+
+        if enemy.handcuffed:
+            enemy.handcuffed = False
+
         while True:
             if type(player) is Player:
                 player_choice = input(
                     f"(a) - Выстрелить в себя / (b) - Выстрелить в дилера.\nВыбрать предмет:\n{self.check_player_items(player, add_keys=True)}"
                 )
-                enemy = self.dealer
             if type(player) is Dealer:
                 player_choice = player.next_move()
-                enemy = self.player
 
             if player_choice in "12345":
 
                 match player_choice:
                     case "1":
-                        player.drink_beer(shotgun=shotgun)
+                        missed_cartridge = player.drink_beer(shotgun=shotgun)
+                        if missed_cartridge == 0:
+                            self.dealer.memory["blank_cartridges"] -= 1
+                        else:
+                            self.dealer.memory["live_cartridges"] -= 1
                     case "2":
-                        player.use_magnifying_glass(shotgun=shotgun)
+                        current_cartridge = player.use_magnifying_glass(shotgun=shotgun)
+                        if type(player) is Dealer:
+                            player.memory["current_cartridge"] = current_cartridge
                     case "3":
                         player.smoke_cigarette()
                     case "4":
@@ -86,15 +99,17 @@ class BuckshotRoulette:
         if player_choice == "b":
             result = player.enemy_shot(shotgun=self.shotgun, enemy=enemy)
 
+        if type(player) is Dealer:
+            player.memory["current_cartridge"] = None
+
         if result == 0:
             self.dealer.memory["blank_cartridges"] -= 1
-            print(self.dealer.memory)
         else:
             self.dealer.memory["live_cartridges"] -= 1
             self.display_health()
 
         self.dealer.memory["enemy_health"] = self.player.health
-        return result, player_choice
+        return result, player_choice, enemy.handcuffed
 
     def manage_queue(self):
         yield from cycle([self.player, self.dealer])
@@ -135,7 +150,10 @@ class BuckshotRoulette:
 
             while True:
 
-                result, target = self.engage_target(player=player, shotgun=self.shotgun)
+                result, target, handcuff_marker = self.engage_target(
+                    player=player, shotgun=self.shotgun
+                )
+
                 if result == 0 and target == "a":
                     sleep(3)
                     if self.shotgun.magazine:
@@ -143,7 +161,8 @@ class BuckshotRoulette:
                         continue
 
                 elif result == 1 or (result == 0 and target == "b"):
-                    player = next(queue)
+                    if handcuff_marker is False:
+                        player = next(queue)
 
                 if not (self.player.alive and self.dealer.alive):
                     text = ["Победил дилер.", "Поздравляю, ты победил!"]

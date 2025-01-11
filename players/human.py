@@ -47,20 +47,20 @@ class Human:
             self.pockets.append(choice(items))
 
     def smoke_cigarette(self):
-        if ('3', "🚬") in self.pockets:
+        if ("3", "🚬") in self.pockets:
             self.pockets.remove(("3", "🚬"))
-            print(f"{self.name} выкурил сигарету. Восстановлена 1 жизнь.")
+            print(f"{self.name.title()} выкурил сигарету. Восстановлена 1 жизнь.")
             if self.health < 4:
                 self.health += 1
 
     def use_hand_saw(self, shotgun: ShotGun):
-        if ('4', "🔪") in self.pockets:
+        if ("4", "🔪") in self.pockets:
             self.pockets.remove(("4", "🔪"))
             print("Была использована ручная пила. Дробовик имеет двойной урон!")
             shotgun.double_damage = True
 
     def use_magnifying_glass(self, shotgun: ShotGun):
-        if ('2', "🔍") in self.pockets:
+        if ("2", "🔍") in self.pockets:
             self.pockets.remove(("2", "🔍"))
             print("Была использована лупа...")
         if shotgun.magazine:
@@ -70,16 +70,18 @@ class Human:
             return current
 
     def drink_beer(self, shotgun: ShotGun):
-        if ('1', "🍺") in self.pockets:
+        if ("1", "🍺") in self.pockets:
             self.pockets.remove(("1", "🍺"))
             if shotgun.magazine:
                 cartridge = shotgun.magazine.pop()
+                print(f"{self.name.title()} выпил пива.")
                 print(["Холостой ", "Боевой "][cartridge] + "патрон пропущен.")
+                return cartridge
 
     def handcuff_opponent(self, enemy):
-        if ('5', "⛓") in self.pockets:
+        if ("5", "⛓") in self.pockets:
             self.pockets.remove(("5", "⛓"))
             print(
-                f"{self.name} одел наручники на {enemy.name} - он пропустит следующий ход."
+                f"{self.name.title()} одел наручники на {enemy.name.title()} - он пропустит следующий ход."
             )
             enemy.handcuffed = True
