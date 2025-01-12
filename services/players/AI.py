@@ -20,7 +20,6 @@ class Dealer(Human):
 
     def next_move(self):
         sleep(3)
-        print(self.memory)
         solution = None
 
         if not solution and self.health < 4 and ("3", "🚬") in self.pockets:
